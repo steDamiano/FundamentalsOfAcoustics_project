@@ -4,11 +4,11 @@ Final project of Fundamentals of Acoustics Course @ Polimi (M. Sc. Music and Aco
 # Project aim
 The goal of this project is to better analyze and understand the spectral behaviour of the Piano. It is well known that the vibration of a real string, with a finite mass and stiffness, departs from the harmonic behaviour, described by the equation:
 ```
-<img src="https://latex.codecogs.com/gif.latex?f_{n}&space;=&space;nf_{0}"/>
+![equation](https://latex.codecogs.com/gif.latex?f_%7Bn%7D%20%3D%20nf_%7B0%7D)
 ```
 The stiff string actually produces harmonics with a frequency which is slightly sharp with respect to the ideal case: piano strings, specially in the low register, show a behaviour which is inharmonic to a different degree according to the piano register of the tone. The equation which describes the inharmonic progression of the partials is:
 ```
-<img src="https://latex.codecogs.com/gif.latex?f_{n}&space;=&space;nf_{0}\sqrt{1&plus;Bn^2}"/>
+![equation](https://latex.codecogs.com/gif.latex?f_%7Bn%7D%20%3D%20nf_%7B0%7D%5Csqrt%7B1&plus;Bn%5E2%7D)
 ```
 where B is the inharmonicity coefficient depending on string radius, linear density, tension, length and Young's modulus. 
 
