@@ -4,8 +4,8 @@ clc;
 
 %% Steinway B2 sample C1
 
-[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C1.aiff");
-%[y,Fs] = audioread("./YamahaU3samples/C3.wav");
+[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C2.aiff");
+%[y,Fs] = audioread("./YamahaU3samples/C5.wav");
 y_mono = sum(y,2)/size(y,2);
 Nfft = 2^17;
 
@@ -20,48 +20,12 @@ B = 0.0001;
 delta = 1;
 counter = 0;
 old_trend = 1;
-f1 = 32.323;
+f1 = 65.323;
 deltaF = 0.4 * f1;
 
-%% Peak reduction step
-% deltaFreq = 5*f1;
-% [peaks, locs] = findpeaks(y_fft(1:floor(deltaFreq*Nfft/Fs)));
-% 
-% [MAXpeaks, MAXidx] = maxk(peaks,10);
-% MAXlocs = locs(MAXidx);
-% 
-% figure();
-% plot(f, y_fft);
-% xlim([0,1000]);
-% hold on;
-% plot(f(MAXlocs),MAXpeaks, 'o');
-
-% Try to cycle through frequencies
-bin = 1;
-deltaFreq = 5*f1;
-deltaBin = floor(deltaFreq * Nfft/Fs);
-reducedPeaks = [];
-reducedFreqs = [];
-while(bin < length(y_fft) - deltaBin)
-    [peaks, locs] = findpeaks(y_fft(bin:bin + deltaBin));
-
-    [MAXpeaks, MAXidx] = maxk(peaks,10);
-    MAXlocs = locs(MAXidx) + bin;
-    
-    reducedPeaks = [reducedPeaks; MAXpeaks];
-    reducedFreqs = [reducedFreqs; MAXlocs];
-    
-    bin = bin + deltaBin;
-end
-
-disp("Loop end");
-
-% % Plot to check selected peaks
-% figure();
-% plot(f, y_fft);
-% xlim([0,1000]);
-% hold on;
-% plot(f(reducedFreqs),reducedPeaks, 'o');
+% DATA TO CYCLE OVER NOTES
+B2fundamentals = [32.323 65.1 131.1 262.1 524.9];
+U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
 
 %% Iteration Loop
 peaks = zeros(1,25);
@@ -76,6 +40,8 @@ while(counter <100 && abs(delta) > 10e-4)
     % find highest peak in selected interval
     peaks(i) = max(y_fft(lowLimit:upLimit));
     f_peaks(i) = find(y_fft == peaks(i));
+    
+    
     end
     
     % compute error and trend
