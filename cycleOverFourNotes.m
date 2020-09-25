@@ -5,7 +5,7 @@ clc;
 
 
 % DATA TO CYCLE OVER NOTES
-B2fundamentals = [32.323 65.1 131.1 262.1 524.9];
+B2fundamentals = [32.323 65.2 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
 
 B2names = ["Piano.mf.C1.aiff", "Piano.mf.C2.aiff", ...
@@ -88,6 +88,41 @@ for j=1:5
 
     BcoeffsB2(j) = B;
     BinterpB2(j) = c(1) / f1^2;
+%     
+%     % Plots
+%     figure(1);
+%     subplot(2,4,j);
+%     plot(f,abs(y_fft));
+%     title("Spectrum Steinway B2: C"+j);
+%     xlabel("f [Hz]");
+%     ylabel("FFT");
+%     xlim([0, ceil(f_peaks(length(f_peaks))/Nfft * Fs /10)*10]);
+%     hold on;
+%     plot(f(f_peaks), peaks, 'or');
+%     plot(f_theoretical, peaks, '.b');
+%     legend('FFT','Spectrum Peaks', 'Computed Peaks');
+% 
+%     figure(2);
+%     subplot(2,4,j);
+%     plot(f, y_fft);
+%     hold on;
+%     title("Ideal vs Real Partials Steinway B2: C"+j);
+%     xlabel("f [Hz]");
+%     ylabel("FFT");
+%     xlim([0, ceil(f_peaks(15)/Nfft * Fs /10)*10]);
+%     plot(f(f_peaks), peaks, 'or');
+%     stem(f_ideal, peaks);
+%     legend('FFT','Real partials','Ideal partials');
+% 
+% 
+%     figure(3);
+%     subplot(2,4,j);
+%     plot((1:25).^2, y_est);
+%     hold on;
+%     plot((1:25).^2, (f(f_peaks)./(1:25)).^2, 'or');
+%     title("Partials Steinway B2: C"+j);
+%     ylabel("(f_{n}/n)^2");
+%     xlabel("n^2");
     
     
 end
@@ -162,7 +197,44 @@ for j=1:5
 
     BcoeffsU3(j) = B;
     BinterpU3(j) = c(1) / f1^2;
-
+%     
+%     % Plots
+%     figure(1);
+%     subplot(2,4,4+j);
+%     plot(f,abs(y_fft));
+%     title("Spectrum Yamaha U3: C"+j);
+%     xlabel("f [Hz]");
+%     ylabel("FFT");
+%     xlim([0, ceil(f_peaks(length(f_peaks))/Nfft * Fs /10)*10]);
+%     hold on;
+%     plot(f(f_peaks), peaks, 'or');
+%     plot(f_theoretical, peaks, '.b');
+%     hold off;
+%     legend('FFT','Spectrum Peaks', 'Computed Peaks');
+% 
+%     figure(2)
+%     subplot(2,4,4+j);
+%     plot(f, y_fft);
+%     hold on;
+%     title("Ideal vs Real Partials Yamaha U3: C" + j);
+%     xlabel("f [Hz]");
+%     ylabel("FFT");
+%     xlim([0, ceil(f_peaks(15)/Nfft * Fs /10)*10]);
+%     plot(f(f_peaks), peaks, 'or');
+%     stem(f_ideal, peaks);
+%     hold off;
+%     legend('FFT','Real partials','Ideal partials');
+% 
+% 
+%     figure(3);
+%     subplot(2,4,4+j);
+%     plot((1:25).^2, y_est);
+%     hold on;
+%     plot((1:25).^2, (f(f_peaks)./(1:25)).^2, 'or');
+%     title("Partials Yamaha U3: C"+j);
+%     ylabel("(f_{n}/n)^2");
+%     xlabel("n^2");
+%     hold off;
     
 end
 
@@ -174,4 +246,4 @@ plot(1:5, BcoeffsU3, 'ob');
 legend('B2 inharmonicity', 'U3 inharmonicity');
 title("Inharmonicity coefficient comparison Yamaha U3 - Steinway B2");
 ylabel("B");
-xlabel("C_{1-5}");
+xlabel("C_{1-4}");

@@ -4,14 +4,16 @@ clc;
 
 %% Steinway B2 sample C1
 
-[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C2.aiff");
-%[y,Fs] = audioread("./YamahaU3samples/C5.wav");
+%[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C1.aiff");
+
+[y,Fs] = audioread("./YamahaU3samples/C1.wav");
 y_mono = sum(y,2)/size(y,2);
 Nfft = 2^17;
 
 y_fft = fft(y_mono,Nfft);
 y_fft(1:ceil(20*Nfft/Fs))=0;
 y_fft=abs(y_fft(1:Nfft/2));
+y_fft = y_fft/max(y_fft);
 
 f = Fs/2 * linspace(0,1,Nfft/2);
 
@@ -20,13 +22,16 @@ B = 0.0001;
 delta = 1;
 counter = 0;
 old_trend = 1;
-f1 = 65.323;
+f1 = 31.73;
 deltaF = 0.4 * f1;
 
 % DATA TO CYCLE OVER NOTES
 B2fundamentals = [32.323 65.1 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
 
+%Plot the decay
+figure();
+plot(y_mono);
 %% Iteration Loop
 peaks = zeros(1,25);
 f_peaks = zeros(1,25);
@@ -77,7 +82,7 @@ y_est = polyval(c, (1:25).^2);
 % Plots
 figure();
 plot(f,abs(y_fft));
-title("Spectrum Steinway B2: C1");
+title("Spectrum Yamaha U3: C1");
 xlabel("f [Hz]");
 ylabel("FFT");
 xlim([0, ceil(f_peaks(length(f_peaks))/Nfft * Fs /10)*10]);
@@ -89,20 +94,20 @@ legend('FFT','Spectrum Peaks', 'Computed Peaks');
 figure()
 plot(f, y_fft);
 hold on;
-title("Ideal vs Real Partials");
+title("Ideal vs Real Partials Yamaha U3: C1");
 xlabel("f [Hz]");
 ylabel("FFT");
 xlim([0, ceil(f_peaks(15)/Nfft * Fs /10)*10]);
 plot(f(f_peaks), peaks, 'or');
 stem(f_ideal, peaks);
-legend('FFT','Inharmonic partials','Ideal partials');
+legend('FFT','Real partials','Ideal partials');
 
 
 figure();
 plot((1:25).^2, y_est);
 hold on;
 plot((1:25).^2, (f(f_peaks)./(1:25)).^2, 'or');
-title("Inharmonicity of first 25 partials Steinway B2");
+title("Inharmonicity of first 25 partials Yamaha U3: C1");
 ylabel("(f_{n}/n)^2");
 xlabel("n^2");
 
@@ -112,5 +117,5 @@ R=floor(M*0.5);
 w=window(@bartlett,M);
 N=4096;
 spectrogram(y_mono,w,R, N, Fs, 'yaxis');
-ylim([0,2]);
-title("STFT Steinway B2");
+ylim([0,3]);
+title("STFT Yamaha U3");
