@@ -23,6 +23,47 @@ old_trend = 1;
 f1 = 32.323;
 deltaF = 0.4 * f1;
 
+%% Peak reduction step
+% deltaFreq = 5*f1;
+% [peaks, locs] = findpeaks(y_fft(1:floor(deltaFreq*Nfft/Fs)));
+% 
+% [MAXpeaks, MAXidx] = maxk(peaks,10);
+% MAXlocs = locs(MAXidx);
+% 
+% figure();
+% plot(f, y_fft);
+% xlim([0,1000]);
+% hold on;
+% plot(f(MAXlocs),MAXpeaks, 'o');
+
+% Try to cycle through frequencies
+bin = 1;
+deltaFreq = 5*f1;
+deltaBin = floor(deltaFreq * Nfft/Fs);
+reducedPeaks = [];
+reducedFreqs = [];
+while(bin < length(y_fft) - deltaBin)
+    [peaks, locs] = findpeaks(y_fft(bin:bin + deltaBin));
+
+    [MAXpeaks, MAXidx] = maxk(peaks,10);
+    MAXlocs = locs(MAXidx) + bin;
+    
+    reducedPeaks = [reducedPeaks; MAXpeaks];
+    reducedFreqs = [reducedFreqs; MAXlocs];
+    
+    bin = bin + deltaBin;
+end
+
+disp("Loop end");
+
+% % Plot to check selected peaks
+% figure();
+% plot(f, y_fft);
+% xlim([0,1000]);
+% hold on;
+% plot(f(reducedFreqs),reducedPeaks, 'o');
+
+%% Iteration Loop
 peaks = zeros(1,25);
 f_peaks = zeros(1,25);
 while(counter <100 && abs(delta) > 10e-4)
@@ -46,14 +87,8 @@ while(counter <100 && abs(delta) > 10e-4)
             delta = delta * sign(delta);
     end
     if(trend<0)
-%         if(delta < 0)
-%             delta = delta * sign(delta);
-%         end
-%         if(delta > 0)
-%             delta = delta * sign(trend);
-%         end
-    delta = delta * sign(delta);
-    delta = delta * sign(trend);
+        delta = delta * sign(delta);
+        delta = delta * sign(trend);
     end
     if(sign(trend) ~= sign(old_trend))
         delta = delta/2;
