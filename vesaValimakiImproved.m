@@ -4,15 +4,15 @@ clc;
 
 %% Steinway B2 sample C1
 
-%[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C1.aiff");
+[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C4.aiff");
 
-[y,Fs] = audioread("./YamahaU3samples/C1.wav");
+%[y,Fs] = audioread("./YamahaU3samples/C1.wav");
 y_mono = sum(y,2)/size(y,2);
 Nfft = 2^17;
 
 y_fft = fft(y_mono,Nfft);
 y_fft(1:ceil(20*Nfft/Fs))=0;
-y_fft=abs(y_fft(1:Nfft/2));
+y_fft = abs(y_fft(1:Nfft/2));
 y_fft = y_fft/max(y_fft);
 
 f = Fs/2 * linspace(0,1,Nfft/2);
@@ -22,16 +22,72 @@ B = 0.0001;
 delta = 1;
 counter = 0;
 old_trend = 1;
-f1 = 31.73;
+f1 = 262.1;
 deltaF = 0.4 * f1;
 
 % DATA TO CYCLE OVER NOTES
 B2fundamentals = [32.323 65.1 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
+%{
+%% Peak reduction step
+% deltaFreq = 5*f1;
+% [peaks, locs] = findpeaks(y_fft(1:floor(deltaFreq*Nfft/Fs)));
+% 
+% [MAXpeaks, MAXidx] = maxk(peaks,10);
+% MAXlocs = locs(MAXidx);
+% 
+% figure();
+% plot(f, y_fft);
+% xlim([0,1000]);
+% hold on;
+% plot(f(MAXlocs),MAXpeaks, 'o');
 
-%Plot the decay
+% Try to cycle through frequencies
+bin = 1;
+deltaFreq = 5*f1;
+deltaBin = floor(deltaFreq * Nfft/Fs);
+reducedPeaks = [];
+reducedFreqs = [];
+while(bin < length(y_fft) - deltaBin)
+    [peaks, locs] = findpeaks(y_fft(bin:bin + deltaBin));
+
+    [MAXpeaks, MAXidx] = maxk(peaks,10);
+    MAXlocs = locs(MAXidx) + bin;
+    
+    reducedPeaks = [reducedPeaks; MAXpeaks];
+    reducedFreqs = [reducedFreqs; MAXlocs];
+    
+    bin = bin + deltaBin;
+end
+
+disp("Loop end");
+
+
+%Sort frequencies array
+reducedFreqs = sort(reducedFreqs);
+for i=1:length(reducedFreqs)
+    reducedPeaks(i) = y_fft(reducedFreqs(i) - 1);
+end
+
+% % Plot to check selected peaks
+% figure();
+% plot(f, y_fft);
+% xlim([0,1000]);
+% hold on;
+% plot(f(reducedFreqs - 1),reducedPeaks, 'o');
 figure();
-plot(y_mono);
+plot(f, y_fft);
+hold on;
+y_fft = zeros(length(y_fft), 1);
+y_fft(reducedFreqs - 1) = reducedPeaks;
+% % Plot to check selected peaks
+
+plot(f, y_fft);
+% xlim([0,1000]);
+% hold on;
+% plot(f(reducedFreqs - 1),reducedPeaks, 'o');
+%}
+
 %% Iteration Loop
 peaks = zeros(1,25);
 f_peaks = zeros(1,25);
@@ -119,3 +175,85 @@ N=4096;
 spectrogram(y_mono,w,R, N, Fs, 'yaxis');
 ylim([0,3]);
 title("STFT Yamaha U3");
+
+
+%% Play the sound
+oscillators = {};
+normalizedAmp = peaks ./ sum(peaks);
+
+deviceWriter = audioDeviceWriter(44100);
+deviceWriter.SupportVariableSizeInput = true;
+deviceWriter.BufferSize = 64;
+
+% IDEAL SPECTRUM
+for i=1:length(peaks)
+    osc = audioOscillator('sine','Frequency', f_ideal(i), 'Amplitude', peaks(i), 'SamplesPerFrame', 44100);
+    oscillators(i) = {osc};
+end
+
+%Create oscillators for first 15 harmonics
+osc1 = oscillators{1};
+osc2 = oscillators{2};
+osc3 = oscillators{3};
+osc4 = oscillators{4};
+osc5 = oscillators{5};
+   
+osc6 = oscillators{6};
+osc7 = oscillators{7};
+osc8 = oscillators{8};
+osc9 = oscillators{9};
+osc10 = oscillators{10};
+    
+osc11 = oscillators{11};
+osc12 = oscillators{12};
+osc13 = oscillators{13};
+osc14 = oscillators{14};
+osc15 = oscillators{15};
+
+disp("Press enter to hear ideal spectrum, first 15 harmonics");
+pause();
+tic
+while toc<5
+    %deviceWriter(waveform);
+    deviceWriter(osc1() + osc2() + osc3() + osc4() + osc5() ...
+         + osc6() + osc7() + osc8() + osc9() + osc10() ...
+        + osc11() + osc12() + osc13() + osc14() + osc15());
+end
+
+%% REAL SPECTRUM
+
+% Uncomment to set manually the B coefficient and hear differences
+% B = 0.0001;
+% f_theoretical = (1:25) *f1/(1+B)^(-0.5) .* ((1+B.*(1:25).^2).^(0.5));
+for i=1:length(peaks)
+    osc = audioOscillator('sine','Frequency', f_theoretical(i), 'Amplitude', peaks(i), 'SamplesPerFrame', 44100);
+    oscillators(i) = {osc};
+end
+
+%Create oscillators for first 15 harmonics
+osc1 = oscillators{1};
+osc2 = oscillators{2};
+osc3 = oscillators{3};
+osc4 = oscillators{4};
+osc5 = oscillators{5};
+   
+osc6 = oscillators{6};
+osc7 = oscillators{7};
+osc8 = oscillators{8};
+osc9 = oscillators{9};
+osc10 = oscillators{10};
+    
+osc11 = oscillators{11};
+osc12 = oscillators{12};
+osc13 = oscillators{13};
+osc14 = oscillators{14};
+osc15 = oscillators{15};
+
+disp("Press enter to hear real spectrum, first 15 harmonics");
+pause();
+tic
+while toc<5
+    deviceWriter(osc1() + osc2() + osc3() + osc4() + osc5() ...
+         + osc6() + osc7() + osc8() + osc9() + osc10() ...
+        + osc11() + osc12() + osc13() + osc14() + osc15());
+end

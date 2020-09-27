@@ -231,7 +231,7 @@ N=length(y);
 M=floor(0.050*Fs);
 R=floor(M*0.5);
 w=window(@bartlett,M);
-Nfft=4096;
+Nfft=2^16;
 y(N+M)=0;
 X=zeros(floor(Nfft/2+1),floor(N/R)+1);
 for m=1:floor(N/R)+1
@@ -243,11 +243,11 @@ end
 time=(1:size(X,2))*0.025;
 freq=linspace(Fs/2,0,size(X,1));
 figure();
-%imagesc(time,freq,20*log10(abs(X)));
+imagesc(time,freq,20*log10(abs(X)));
 
 % MATLAB WAY
-spectrogram(y,w,R, Nfft, Fs, 'yaxis');
-ylim([0,2]);
+%spectrogram(y,w,R, Nfft, Fs, 'yaxis');
+%ylim([0,2]);
 title("STFT C1 Yamaha U3");
 
 %Analysis of fn / n (behaviour of partials wrt to ideal case)
