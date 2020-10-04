@@ -2,11 +2,21 @@ clear;
 close;
 clc;
 
-%% Steinway B2 sample C1
+% This is the final file for the analysis of the piano inharmonicity. All
+% the data are initialized to the C2 of the Steinway B2 piano: to change it
+% just open the correct sample from B2 or U3 and set the fundamental
+% frequency (looking at the arrays in the section below you can find the
+% fundamentals for both pianos). 
 
-[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C4.aiff");
+% Section I implements the algorithm by Vesa Valimaki (cit. in Readme) and
+% makes the plots for data analysis. 
+% Section II builds a synthetic spectrum from ideal and real partials and
+% allows to listen to the differences in a pure sinusoidal spectrum. To run
+% this section Audio Toolbox is required.
+%% Steinway B2 sample C2
 
-%[y,Fs] = audioread("./YamahaU3samples/C1.wav");
+[y,Fs] = audioread("./SteinwayB2samples/Piano.mf.C2.aiff");
+%[y,Fs] = audioread("./YamahaU3samples/C2.wav");
 y_mono = sum(y,2)/size(y,2);
 Nfft = 2^17;
 
@@ -22,71 +32,12 @@ B = 0.0001;
 delta = 1;
 counter = 0;
 old_trend = 1;
-f1 = 262.1;
+f1 = 65.1;
 deltaF = 0.4 * f1;
 
 % DATA TO CYCLE OVER NOTES
 B2fundamentals = [32.323 65.1 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
-%{
-%% Peak reduction step
-% deltaFreq = 5*f1;
-% [peaks, locs] = findpeaks(y_fft(1:floor(deltaFreq*Nfft/Fs)));
-% 
-% [MAXpeaks, MAXidx] = maxk(peaks,10);
-% MAXlocs = locs(MAXidx);
-% 
-% figure();
-% plot(f, y_fft);
-% xlim([0,1000]);
-% hold on;
-% plot(f(MAXlocs),MAXpeaks, 'o');
-
-% Try to cycle through frequencies
-bin = 1;
-deltaFreq = 5*f1;
-deltaBin = floor(deltaFreq * Nfft/Fs);
-reducedPeaks = [];
-reducedFreqs = [];
-while(bin < length(y_fft) - deltaBin)
-    [peaks, locs] = findpeaks(y_fft(bin:bin + deltaBin));
-
-    [MAXpeaks, MAXidx] = maxk(peaks,10);
-    MAXlocs = locs(MAXidx) + bin;
-    
-    reducedPeaks = [reducedPeaks; MAXpeaks];
-    reducedFreqs = [reducedFreqs; MAXlocs];
-    
-    bin = bin + deltaBin;
-end
-
-disp("Loop end");
-
-
-%Sort frequencies array
-reducedFreqs = sort(reducedFreqs);
-for i=1:length(reducedFreqs)
-    reducedPeaks(i) = y_fft(reducedFreqs(i) - 1);
-end
-
-% % Plot to check selected peaks
-% figure();
-% plot(f, y_fft);
-% xlim([0,1000]);
-% hold on;
-% plot(f(reducedFreqs - 1),reducedPeaks, 'o');
-figure();
-plot(f, y_fft);
-hold on;
-y_fft = zeros(length(y_fft), 1);
-y_fft(reducedFreqs - 1) = reducedPeaks;
-% % Plot to check selected peaks
-
-plot(f, y_fft);
-% xlim([0,1000]);
-% hold on;
-% plot(f(reducedFreqs - 1),reducedPeaks, 'o');
-%}
 
 %% Iteration Loop
 peaks = zeros(1,25);
@@ -138,7 +89,7 @@ y_est = polyval(c, (1:25).^2);
 % Plots
 figure();
 plot(f,abs(y_fft));
-title("Spectrum Yamaha U3: C1");
+title("Spectrum Steinway B2: C2");
 xlabel("f [Hz]");
 ylabel("FFT");
 xlim([0, ceil(f_peaks(length(f_peaks))/Nfft * Fs /10)*10]);
@@ -150,7 +101,7 @@ legend('FFT','Spectrum Peaks', 'Computed Peaks');
 figure()
 plot(f, y_fft);
 hold on;
-title("Ideal vs Real Partials Yamaha U3: C1");
+title("Ideal vs Real Partials Steinway B2: C2");
 xlabel("f [Hz]");
 ylabel("FFT");
 xlim([0, ceil(f_peaks(15)/Nfft * Fs /10)*10]);
@@ -163,7 +114,7 @@ figure();
 plot((1:25).^2, y_est);
 hold on;
 plot((1:25).^2, (f(f_peaks)./(1:25)).^2, 'or');
-title("Inharmonicity of first 25 partials Yamaha U3: C1");
+title("Inharmonicity of first 25 partials Steinway B2: C2");
 ylabel("(f_{n}/n)^2");
 xlabel("n^2");
 
@@ -171,11 +122,10 @@ figure();
 M=floor(0.050*Fs);
 R=floor(M*0.5);
 w=window(@bartlett,M);
-N=4096;
+N=4*4096;
 spectrogram(y_mono,w,R, N, Fs, 'yaxis');
 ylim([0,3]);
-title("STFT Yamaha U3");
-
+title("STFT Steinway B2");
 
 %% Play the sound
 oscillators = {};
@@ -185,7 +135,7 @@ deviceWriter = audioDeviceWriter(44100);
 deviceWriter.SupportVariableSizeInput = true;
 deviceWriter.BufferSize = 64;
 
-% IDEAL SPECTRUM
+%% IDEAL SPECTRUM
 for i=1:length(peaks)
     osc = audioOscillator('sine','Frequency', f_ideal(i), 'Amplitude', peaks(i), 'SamplesPerFrame', 44100);
     oscillators(i) = {osc};
