@@ -2,8 +2,12 @@ clear;
 close;
 clc;
 
+% This script makes a comparison between the Inharmonicity coefficients for
+% 5 different notes of an Upright and a Grand piano. It makes use of the
+% code implemented in the "InharmonicityAnalysis" script and plots the
+% comparison results.
 
-
+%% Array construction
 % DATA TO CYCLE OVER NOTES
 B2fundamentals = [32.323 65.2 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
