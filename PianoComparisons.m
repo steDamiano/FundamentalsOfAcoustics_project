@@ -11,6 +11,7 @@ clc;
 % DATA TO CYCLE OVER NOTES
 B2fundamentals = [32.323 65.2 131.1 262.1 524.9];
 U3fundamentals = [31.73 64.94 130.5 261.4 523.9];
+IdealFundamentals = [32.703 65.406 130.813 261.626 523.251];
 
 B2names = ["Piano.mf.C1.aiff", "Piano.mf.C2.aiff", ...
     "Piano.mf.C3.aiff", "Piano.mf.C4.aiff", "Piano.mf.C5.aiff"];
@@ -251,3 +252,18 @@ legend('B2 inharmonicity', 'U3 inharmonicity');
 title("Inharmonicity coefficient comparison Yamaha U3 - Steinway B2");
 ylabel("B");
 xlabel("C_{1-4}");
+
+%% Plot Fundamentals comparison
+notes = [4 16 28 40 52];
+B2shift = B2fundamentals - IdealFundamentals;
+U3shift = U3fundamentals - IdealFundamentals;
+
+figure();
+plot(notes, zeros(1,length(notes)), 'DisplayName', 'Ideal tuning');
+hold on
+plot(notes, B2shift, 'DisplayName', 'B2 stretched tuning');
+plot(notes,U3shift, 'DisplayName', 'U3 stretched tuning');
+legend('show');
+xlim([4,52]);
+xlabel("Note number");
+ylabel("f_{fund} - f_{ideal}");
