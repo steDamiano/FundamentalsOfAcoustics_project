@@ -84,7 +84,7 @@ for j=1:5
         counter= counter+1;
     end
 
-    % Theoretical values for inharmonicity coefficient, based on eq. (1)
+    % Theoretical values of partials for computed inharmonicity coefficient, based on eq. (9)
     f_theoretical = (1:25) *f1/(1+B)^(-0.5) .* ((1+B.*(1:25).^2).^(0.5));
     f_ideal = (1:25) * f1;
     % Linear interoplation of spectral peaks
