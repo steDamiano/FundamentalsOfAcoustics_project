@@ -31,6 +31,6 @@ The repository has the Matlab files used to make data analysis together with sam
 http://theremin.music.uiowa.edu/MISpiano.html<br>
 Yamah U3 samples are recorded in a non-anechoic environment using two t.Bone SC140 Microphones placed 5cm over top of the piano, Left Mic over A2 and Right over A5. The recordings are stereo with a sample rate of 44100Hz.
 
-The script "InharmonicityAnalysis.m" is the core of the project, implementing the Vesa Valimaki algorithm and plotting the results of the analysis of spectrum, partials and comparisons between ideal and real partials.
+The script "InharmonicityAnalysis.m" is the core of the project, implementing the Rauhala, Lehtonen Valimaki algorithm and plotting the results of the analysis of spectrum, partials and comparisons between ideal and real partials.
 N.B: Audio Toolbox is required to run Secion II and hear the synthetic result of the sinusoidal spectrums build with ideal and real partials.
 The script "PianoComparisons.m" concludes the analysis by comparing the inharmonicity coefficient of Upright and Grand Piano. It can be extended to include more Piano notes for a more accurate analysis.
